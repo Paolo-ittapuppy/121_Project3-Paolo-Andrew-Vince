@@ -29,6 +29,7 @@ def reverseIndex(dir:str, RIndDB:str, docMapDB:str):
 
 
 def storeIndexes(file, data):
+    #test
     pass
 
 def storeDocMap(file, data):
