@@ -33,6 +33,7 @@ def storeIndexes(file, data):
     pass
 
 def storeDocMap(file, data):
+    #test
     pass
 
 def readHTML(path, index):
