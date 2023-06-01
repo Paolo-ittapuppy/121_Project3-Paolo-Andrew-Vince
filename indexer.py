@@ -33,16 +33,16 @@ def reverseIndex(dir:str, RIndDB:str, docMapDB:str):
                 print(counter) 
             readHTML(file, index, currentID, ps, maping)
             if counter >= maxCounter: #change to be when index is too big
-                storeIndexes(RIndDB+str(dbCount)+'.db', index)
+                storeIndexes(RIndDB+str(dbCount)+'.json', index)
                 index = defaultdict(list)
-                storeDocMap(docMapDB+str(dbCount)+'.db', maping)
+                storeDocMap(docMapDB+str(dbCount)+'.json', maping)
                 maping = {}
                 dbCount +=1
                 counter = 0
             currentID +=1
 
-    storeIndexes(RIndDB+str(dbCount)+'.db', index)
-    storeDocMap(docMapDB+str(dbCount)+'.db', maping)
+    storeIndexes(RIndDB+str(dbCount)+'.json', index)
+    storeDocMap(docMapDB+str(dbCount)+'.json', maping)
 
 def storeIndexes(file, data):
     f = open(file, 'w')
@@ -69,6 +69,7 @@ def readHTML(path, index, id, ps, map):
     webPage = BeautifulSoup(data["content"], "html.parser")
     words = tokenizer.tokenize(webPage.text)
     freq = tokenizer.computeWordFrequencies(words, ps)
+    iw = importantWords(webPage, ps)
 
     #too little words in doc
     if len(words) < 20:
@@ -77,19 +78,36 @@ def readHTML(path, index, id, ps, map):
     if (len(freq.keys())+1)/(len(words)+1) <= float(.2):
         return
     #duplication check needs to be done
+    x = lambda a : a in iw
 
+    total = len(words)
     map[id] = data["url"]
     for word, f in freq.items():
-        index[word].append((id, f))
+
+        index[word].append((id, round(f/total, 4), int(x(word))))
+
+def importantWords(wp, ps):
+    l = set()
+    for tag in ['b', "h1", "h2", "h3" ]:
+        #tags = [b.string for b in wp.findAll(tag)]
+        #for part in tags()
+      
+        s = [b.text for b in wp.findAll(tag)]
+
+        for sent in s:
+            for word in sent.split():
+                l.add(word)
+
+    return l
 
 #recursive combining of all the db files to create the one large reverse index that still needs to be partitioned for queires
 def combineReverseIndexes(path, folderNumber):
     counter = 1
     name = 1
-    while(os.path.isfile(path + str(folderNumber) +'\RI' + str(counter+1) +'.db')):
-        print(path+ str(folderNumber)+'\RI' + str(counter+1) +'.db')
-        f1 = open(path+ str(folderNumber)+'\RI' + str(counter) +'.db', 'r')
-        f2 = open(path+ str(folderNumber)+'\RI' + str(counter+1) +'.db', 'r')
+    while(os.path.isfile(path + str(folderNumber) +'\RI' + str(counter+1) +'.json')):
+        print(path+ str(folderNumber)+'\RI' + str(counter+1) +'.json')
+        f1 = open(path+ str(folderNumber)+'\RI' + str(counter) +'.json', 'r')
+        f2 = open(path+ str(folderNumber)+'\RI' + str(counter+1) +'.json', 'r')
         json1 = json.load(f1)
         json2 = json.load(f2)
         f1.close()
@@ -102,7 +120,7 @@ def combineReverseIndexes(path, folderNumber):
             else:
                 json3[key] = json1[key]
         json3.update(json2)
-        f3 = open(path + str(folderNumber+1)+ '\RI' + str(name) + '.db', 'w')
+        f3 = open(path + str(folderNumber+1)+ '\RI' + str(name) + '.json', 'w')
         json.dump(json3, f3)
         f3.close
         counter += 2
@@ -110,11 +128,11 @@ def combineReverseIndexes(path, folderNumber):
 
     if name == 1:
         return
-    if os.path.isfile(path + str(folderNumber) +'\RI' + str(counter) +'.db'):
-        f1 = open(path+ str(folderNumber)+'\RI' + str(counter) +'.db', 'r')
+    if os.path.isfile(path + str(folderNumber) +'\RI' + str(counter) +'.json'):
+        f1 = open(path+ str(folderNumber)+'\RI' + str(counter) +'.json', 'r')
         json1 = json.load(f1)
         f1.close()
-        f3 = open(path + str(folderNumber+1)+ '\RI' + str(name) + '.db', 'w')
+        f3 = open(path + str(folderNumber+1)+ '\RI' + str(name) + '.json', 'w')
         json.dump(json1, f3)
         f3.close
     #combineReverseIndexes(path, folderNumber+1)
@@ -122,9 +140,9 @@ def combineReverseIndexes(path, folderNumber):
 def wordCounter(path):
     counter = 1
     wordCount = 0
-    while(os.path.isfile(path+'\RI' + str(counter) +'.db')):
-        #print(path+'\RI' + str(counter) +'.db')
-        f1 = open(path+'\RI' + str(counter) +'.db', 'r')
+    while(os.path.isfile(path+'\RI' + str(counter) +'.json')):
+        #print(path+'\RI' + str(counter) +'.json')
+        f1 = open(path+'\RI' + str(counter) +'.json', 'r')
         j = json.load(f1)
         f1.close()
         wordCount += len(j)
@@ -164,9 +182,9 @@ if __name__ == "__main__":
     '''
     i = input()
     print('start')
-    reverseIndex(i, "RI", "docMap")
+    reverseIndex(i, "ReverseIndexesFolder1\RI", "docMap")
     '''
-    combineReverseIndexes(r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\ReverseIndexesTest', 6)
+    combineReverseIndexes(r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\ReverseIndexesFolder', 6)
 
 
 

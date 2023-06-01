@@ -59,7 +59,7 @@ def computeWordFrequencies(tokenList, ps):
     #need way to look at bolded words
     tokenMap = {}
     if type(tokenList) == list:
-        for word in tokenList:
+        for word in tokenList: 
             tokenMap[ps.stem(word)] = tokenMap.get(ps.stem(word), 0) + 1
     return dict(sorted(tokenMap.items(), key=lambda x:x[1], reverse=True))
 
