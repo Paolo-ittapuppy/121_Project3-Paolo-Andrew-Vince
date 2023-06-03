@@ -1,7 +1,8 @@
 how to run the code that creates the index
 run createReverseIndex.py file
 you will have a folder named alpha and a documents named docMappingTest.json.
-move docMappingtest.Json into the Alpha folder, and then you are done with creating the database
+move docMappingtest.Json into the AlphaAlpha folder, and then you are done with creating the database
+AlphaAlpha is the database folder
 
 How to Start the Search Interface:
 ** IMPORTANT **
