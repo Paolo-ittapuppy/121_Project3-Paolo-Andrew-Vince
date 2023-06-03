@@ -1,5 +1,6 @@
 import string
 alphabet = list(string.ascii_lowercase)
+numbers = ['0','1','2','3','4','5','6','7','8','9']
 import ijson
 from collections import defaultdict
 import json
@@ -49,6 +50,65 @@ def combineIds(folder, fileToWriteTo):
     with open(fileToWriteTo, 'w') as f:
         json.dump(d, f)
 
+def splitingAlpha(folder, folderToWriteTo):
+    newJsons = defaultdict(dict)
+    letterToFile = {}
+
+    for letter in alphabet:
+        for letter2 in alphabet:
+            letterToFile[letter+letter2] = open(folderToWriteTo + letter + letter2 +'.json', 'w')
+            newJsons[letter + letter2] = {}
+    for letter in alphabet:
+        letterToFile[letter+'!'] = open(folderToWriteTo + letter + '!' +'.json', 'w')
+        newJsons[letter + '!'] = {}
+        for num in numbers:
+            letterToFile[letter+num] = open(folderToWriteTo + letter + num +'.json', 'w')
+            newJsons[letter + num] = {}
+
+    for num in numbers:
+        letterToFile[num+'!'] = open(folderToWriteTo + num + '!' +'.json', 'w')
+        newJsons[num + '!'] = {}
+        for num2 in numbers:
+            letterToFile[num+num2] = open(folderToWriteTo + num + num2 +'.json', 'w')
+            newJsons[num + num2] = {}
+
+    letterToFile['!'] = open(folderToWriteTo + '\!.json','w' )
+    newJsons['!'] = {}
+
+    for letter in alphabet:
+        with open(folder + letter+ '.json', 'r')as file:
+            for k, v in ijson.kvitems(file, ""):
+                if len(k) >= 2:
+                    if k[0] in alphabet and (k[1] in alphabet or k[1] in numbers):
+                        newJsons[k[0:2]][k] = v
+                    else:
+                        newJsons[k[0]+'!'][k] = v
+                elif len(k) == 1:
+                    newJsons[k[0]*2][k] = v
+    
+    with open(folder+ '!.json', 'r')as file:
+        for k, v in ijson.kvitems(file, ""):
+            if len(k) >= 2:
+                if k[0] in numbers and k[1] in numbers:
+                    newJsons[k[0:2]][k] = v
+                else:
+                    newJsons['!'][k] = v
+            else:
+                newJsons['!'][k] = v
+
+    
+    for k, v in newJsons.items():
+        for _ in v.values():
+            for showing in _:
+                showing[1] = float(showing[1])
+        print(k)
+        json.dump(newJsons[k], letterToFile[k])
+        letterToFile[k].close()
+    
+    
+
 if __name__ == "__main__":
-    combineIds(r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\docMaps\\', r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\docMappingTest.json')
+    #combineIds(r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\docMaps\\', r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\docMappingTest.json')
     #splitLargeJson(r"C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\ReverseIndexesFolder7\RI1.json", r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\alpha\\', 55393) 
+    splitingAlpha(r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\alpha\\', r'C:\Users\Urani\cs 121\121_Project3-Paolo-Andrew-Vince\AlphaAlpha\\')
+
