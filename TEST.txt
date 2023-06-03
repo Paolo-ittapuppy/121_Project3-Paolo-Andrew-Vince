@@ -1,0 +1,31 @@
+LIST OF QUERIES:
+1) cristina Lopes
+    this was one of the initial test cases and we wanted to see if it was generating correctly
+    at first we were getting wonky results so we worked on our tfidf scores until we got it working properly
+2) cristina
+    next we wanted to see if there was a difference between cristina lopes and cristina and we did
+    the same with lopes in the following tests
+3) lopes
+4) hello
+    more basic testing to see if everything was consistent
+5) learn
+6) learning
+    wanted to see the the difference between learn and learning as they should be the same.
+7) computer science
+8) computer
+9) science
+    just wanted to compare more 2 word searches such as computer science and each word within them.
+10) phone
+11) homework
+12) vincent
+13) data
+    for 10-13 we just texted some different words to ensure that things were still running fine
+14) data science
+15) Paolo
+16) Andrew
+for 17 - 20 we were testing the words that were given to us to test and see if it met the requirements.
+For exmaple we found searching for more than 2 words to take longer so we had to optimize our search and our file jsons
+17) Machine Learning
+18) ACM
+19) master of software engineering
+20) software
